@@ -69,8 +69,12 @@ int touchToHourMapping[12] = {
 int hourToLEDmapping[12] = {
   18, 20, 22, 0, 2, 4, 6, 8, 10, 12, 14, 16
 };
+int numColors = 4;
 int ledCount = 24;
 int touchCount = 12;
+uint32_t colors[4] = {
+  0, 0, 0, 0
+};
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -129,7 +133,7 @@ void readTouchInputs(){
             Serial.print(i);
             Serial.println(" was just touched");
             Serial.println(myPins[i]);
-            myPins[i] = !myPins[i];
+            myPins[i] = (myPins[i] + 1) % numColors;
 //            digitalWrite(LED_BUILTIN, HIGH);
             
         }
@@ -140,16 +144,20 @@ void readTouchInputs(){
 
 void lightUp() {
   uint32_t color = strip.Color(255, 0, 0);
+  uint32_t colors[4] = {
+  strip.Color(0, 0, 0), strip.Color(255, 0, 0),
+  strip.Color(0, 255, 0), strip.Color(0, 0, 255) 
+  };
   for (int i=0; i < 12; i++){
     int ledIndex = hourToLEDmapping[touchToHourMapping[i]];
     Serial.print("led Index ");
     Serial.println(ledIndex);
-    if (myPins[i] == 1) {
-      strip.setPixelColor(ledIndex, color);
-    }
-    else {
-      strip.setPixelColor(ledIndex, 0, 0, 0);
-    }
+//    if (myPins[i] == 1) {
+      strip.setPixelColor(ledIndex, colors[myPins[i]]);
+//    }
+//    else {
+//      strip.setPixelColor(ledIndex, 0, 0, 0);
+//    }
   }
   strip.show();
 }
